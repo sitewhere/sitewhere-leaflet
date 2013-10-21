@@ -12,6 +12,7 @@ L.Map.SiteWhere = L.Map.extend({
 		siteWhereApi: 'http://localhost:8080/sitewhere/api/',
 		siteToken: null,
 		showZones: true,
+		onZonesLoaded: null,
 	},
 	
 	/** Initialize components */
@@ -49,6 +50,7 @@ L.Map.SiteWhere = L.Map.extend({
 			var zones = L.FeatureGroup.SiteWhere.zones({
 				siteWhereApi: this.options.siteWhereApi,
 				siteToken: this.options.siteToken,
+				onZonesLoaded: this.options.onZonesLoaded,
 			});
 			this.addLayer(zones);
 		}
