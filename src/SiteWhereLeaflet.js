@@ -244,9 +244,20 @@ L.FeatureGroup.SiteWhere.AssignmentLocations = L.FeatureGroup.extend({
 		);
 	},
 	
+	/** Pan map to most recent location */
+	panToLastLocation: function(map) {
+		if (this.lastLocation) {
+    		map.panTo(this.lastLocation);
+		}
+	},
+	
+	/** LatLng for last location in list */
+	lastLocation: null,
+	
 	/** Called when location data has been loaded successfully */
 	_onLocationsLoaded: function(locations) {
     	this.clearLayers();
+    	this.lastLocation = null;
     	
 		var location, results = locations.results;
 		var marker;
@@ -256,13 +267,16 @@ L.FeatureGroup.SiteWhere.AssignmentLocations = L.FeatureGroup.extend({
 		
 		// Add a marker for each location.
     	var latLngs = [];
+    	var latLng;
 		for (var locIndex = 0; locIndex < results.length; locIndex++) {
 			location = results[locIndex];
 			if (this.options.showMarkers) {
 				marker = this._createMarkerForLocation(location);
 				this.addLayer(marker);
 			}
-    		latLngs.push(new L.LatLng(location.latitude, location.longitude));
+			latLng = new L.LatLng(location.latitude, location.longitude);
+    		latLngs.push(latLng);
+    		this.lastLocation = latLng;
 		}
     	if ((latLngs.length > 0) && (this.options.showLine)) {
     		this._createLineForLocations(this, latLngs);
