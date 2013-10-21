@@ -191,6 +191,122 @@ L.FeatureGroup.SiteWhere.zones = function (options) {
 	return new L.FeatureGroup.SiteWhere.Zones(options);
 };
 
+
+/*
+ * Feature group for recent locations associated with an assignment.
+ */
+L.FeatureGroup.SiteWhere.AssignmentLocations = L.FeatureGroup.extend({
+
+	options: {
+		// Data options.
+		siteWhereApi: 'http://localhost:8080/sitewhere/api/',
+		assignmentToken: null,
+		maxResults: 30,
+		
+		// Line rendering options (see L.Path).
+		showLine: true,
+		lineOptions: {
+            stroke: true,
+            color: '#005599',
+            weight: 5,
+            opacity: 0.5,
+		},
+		
+		// Marker rendering options.
+		showMarkers: true,
+		
+		// Event callbacks.
+		onLocationsLoaded: null,
+		onError: null,
+	},
+	
+	initialize: function(options) {
+		L.setOptions(this, options);
+		L.FeatureGroup.prototype.initialize.call(this);
+        
+		// Error if no assignment token specified.
+		if (!this.options.assignmentToken) {
+			this._handleNoAssignmentToken();
+		} else {
+			this.refresh();
+		}
+	},
+	
+	/** Refresh zones information */
+	refresh: function() {
+		var self = this;
+		var url = this.options.siteWhereApi + 'assignments/' + this.options.assignmentToken + '/locations';
+		L.SiteWhere.Util.getJSON(url, 
+			function(locations, status, jqXHR) { 
+				self._onLocationsLoaded(locations); }, 
+			function(jqXHR, textStatus, errorThrown) { 
+				self._onLocationsFailed(jqXHR, textStatus, errorThrown); }
+		);
+	},
+	
+	/** Called when location data has been loaded successfully */
+	_onLocationsLoaded: function(locations) {
+    	this.clearLayers();
+    	
+		var location, results = locations.results;
+		var marker;
+		
+		// Add newest last.
+		results.reverse();
+		
+		// Add a marker for each location.
+    	var latLngs = [];
+		for (var locIndex = 0; locIndex < results.length; locIndex++) {
+			location = results[locIndex];
+			if (this.options.showMarkers) {
+				marker = this._createMarkerForLocation(location);
+				this.addLayer(marker);
+			}
+    		latLngs.push(new L.LatLng(location.latitude, location.longitude));
+		}
+    	if ((latLngs.length > 0) && (this.options.showLine)) {
+    		this._createLineForLocations(this, latLngs);
+    	}
+		
+		// Callback for actions taken after locations are loaded.
+		if (this.options.onLocationsLoaded != null) {
+			this.options.onLocationsLoaded();
+		}
+	},
+	
+	/** Create a marker for the given location */
+	_createMarkerForLocation: function(location) {
+		return L.marker([location.latitude, location.longitude]).bindPopup(location.assetName);
+	},
+	
+	/** Create a line that connects the locations */
+	_createLineForLocations: function(layer, latLngs) {
+		var line = L.polyline(latLngs, this.options.lineOptions);
+		layer.addLayer(line);	
+	},
+	
+	/** Called when location data load fails */
+	_onLocationsFailed: function(jqXHR, textStatus, errorThrown) {
+		this._handleError('Locations load failed. ' + errorThrown);
+	},
+	
+	/** Handle error condition if no assignment token was specified */
+	_handleNoAssignmentToken: function() {
+		this._handleError('No assignment token specified.');
+	},
+	
+	/** Handle error in processing */
+	_handleError: function(message) {
+		if (onError != null) {
+			onError(message);
+		}
+	}
+});
+
+L.FeatureGroup.SiteWhere.assignmentLocations = function (options) {
+	return new L.FeatureGroup.SiteWhere.AssignmentLocations(options);
+};
+
 /*
  * Container for SiteWhere classes.
  */
