@@ -17,15 +17,15 @@ L.Map.SiteWhere = L.Map.extend({
 	
 	/** Initialize components */
 	initialize: function(id, options) {
-        L.setOptions(this, options);
-        L.Map.prototype.initialize.call(this, id, options);
+		L.setOptions(this, options);
+		L.Map.prototype.initialize.call(this, id, options);
         
-        // Error if no site token specified.
-        if (!this.options.siteToken) {
-        	this._handleNoSiteToken();
-        } else {
-        	this.refresh();
-        }
+		// Error if no site token specified.
+		if (!this.options.siteToken) {
+			this._handleNoSiteToken();
+		} else {
+			this.refresh();
+		}
 	},
 	
 	/** Refresh site information */
