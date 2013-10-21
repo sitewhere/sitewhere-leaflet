@@ -117,15 +117,15 @@ L.FeatureGroup.SiteWhere.Zones = L.FeatureGroup.extend({
 	},
 	
 	initialize: function(options) {
-        L.setOptions(this, options);
-        L.FeatureGroup.prototype.initialize.call(this);
+		L.setOptions(this, options);
+		L.FeatureGroup.prototype.initialize.call(this);
         
-        // Error if no site token specified.
-        if (!this.options.siteToken) {
-        	this._handleNoSiteToken();
-        } else {
-        	this.refresh();
-        }
+		// Error if no site token specified.
+		if (!this.options.siteToken) {
+			this._handleNoSiteToken();
+		} else {
+			this.refresh();
+		}
 	},
 	
 	/** Refresh zones information */
