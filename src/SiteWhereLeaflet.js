@@ -40,7 +40,7 @@ L.Map.SiteWhere = L.Map.extend({
 	
 	/** Called when site data has been loaded successfully */
 	_onSiteLoaded: function(site) {
-		var mapInfo = this._metadataAsLookup(site.mapMetadata.metadata);
+		var mapInfo = site.mapMetadata.metadata;
 		var latitude = (mapInfo.centerLatitude ? mapInfo.centerLatitude : 39.9853);
 		var longitude = (mapInfo.centerLongitude ? mapInfo.centerLongitude : -104.6688);
 		var zoomLevel = (mapInfo.zoomLevel ? mapInfo.zoomLevel : 10);
