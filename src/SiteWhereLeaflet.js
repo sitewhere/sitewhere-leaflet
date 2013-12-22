@@ -40,7 +40,7 @@ L.Map.SiteWhere = L.Map.extend({
 	
 	/** Called when site data has been loaded successfully */
 	_onSiteLoaded: function(site) {
-		var mapInfo = site.mapMetadata.metadata;
+		var mapInfo = site.map.metadata;
 		var latitude = (mapInfo.centerLatitude ? mapInfo.centerLatitude : 39.9853);
 		var longitude = (mapInfo.centerLongitude ? mapInfo.centerLongitude : -104.6688);
 		var zoomLevel = (mapInfo.zoomLevel ? mapInfo.zoomLevel : 10);
@@ -58,13 +58,13 @@ L.Map.SiteWhere = L.Map.extend({
 	
 	/** Loads a TileLayer based on map type and metadata associated with site */
 	_loadMapTileLayer: function(site, mapInfo) {
-		if (site.mapType == L.Map.SiteWhere.MAP_TYPE_MAPQUEST) {
+		if (site.map.type == L.Map.SiteWhere.MAP_TYPE_MAPQUEST) {
 			var mapquestUrl = 'http://{s}.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png';
 			var subDomains = ['otile1','otile2','otile3','otile4'];
 			var mapquestAttrib = 'MapQuest data';
 			var mapquest = new L.TileLayer(mapquestUrl, {maxZoom: 18, attribution: mapquestAttrib, subdomains: subDomains});		
 			mapquest.addTo(this);
-		} else if (site.mapType == L.Map.SiteWhere.MAP_TYPE_GEOSERVER) {
+		} else if (site.map.type == L.Map.SiteWhere.MAP_TYPE_GEOSERVER) {
 			var gsBaseUrl = (mapInfo.geoserverBaseUrl ? mapInfo.geoserverBaseUrl : "http://localhost:8080/geoserver/");
 			var gsRelativeUrl = "geoserver/gwc/service/gmaps?layers=";
 			var gsLayerName = (mapInfo.geoserverLayerName ? mapInfo.geoserverLayerName : "tiger:tiger_roads");
@@ -83,15 +83,6 @@ L.Map.SiteWhere = L.Map.extend({
 	/** Handle error condition if no site token was specified */
 	_handleNoSiteToken: function() {
 		alert('No site token.');
-	},
-	
-	/** Converts SiteWhere entity metadata to a lookup */
-	_metadataAsLookup: function(metadata) {
-		var lookup = {};
-		for (var i = 0, len = metadata.length; i < len; i++) {
-		    lookup[metadata[i].name] = metadata[i].value;
-		}
-		return lookup;
 	},
 });
 
